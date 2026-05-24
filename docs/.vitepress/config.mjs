@@ -13,7 +13,8 @@ export default defineConfig({
       { text: 'Inicio', link: '/' },
       { text: 'Proyectos', link: '/proyectos/portfolio' },
       { text: 'Prácticas', link: '/practicas/cloudflare' },
-      { text: 'Guías', link: '/guias/git-basico' }
+      { text: 'Guías', link: '/guias/git-basico' },
+      { text: 'SAP', link: '/sap/proyecto1-rap' }
     ],
 
     sidebar: [
@@ -50,7 +51,13 @@ export default defineConfig({
           { text: 'Despliegue Google Cloud', link: '/guias/despliegue-google-cloud' },
           { text: 'Estructura React', link: '/guias/react-estructura' }
         ]
-      }
+      },
+      {
+        text: 'SAP ABAP Cloud',
+        items: [
+          { text: 'Proyecto 1: CRUD con RAP', link: '/sap/proyecto1-rap' }
+  ]
+}
     ],
 
     socialLinks: [
