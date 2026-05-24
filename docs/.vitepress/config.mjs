@@ -56,8 +56,8 @@ export default defineConfig({
         text: 'SAP ABAP Cloud',
         items: [
           { text: 'Proyecto 1: CRUD con RAP', link: '/sap/proyecto1-rap' }
-  ]
-}
+        ]
+      }
     ],
 
     socialLinks: [
