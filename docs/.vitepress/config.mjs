@@ -12,32 +12,39 @@ export default defineConfig({
     nav: [
       { text: 'Inicio', link: '/' },
       { text: 'Proyectos', link: '/proyectos/portfolio' },
-      { text: 'Prácticas', link: '/practicas/cloudflare' },
       { text: 'Guías', link: '/guias/git-basico' },
       { text: 'SAP', link: '/sap/proyecto1-rap' }
     ],
 
     sidebar: [
       {
-        text: 'Proyectos',
+        text: 'IA',
         items: [
-          { text: 'Portfolio personal', link: '/proyectos/portfolio' },
-          { text: 'Ana Moreno Portfolio', link: '/proyectos/ana-moreno-portfolio' },
-          { text: 'CF Dashboard', link: '/proyectos/cf-dashboard' },
-          { text: 'Videogames API', link: '/proyectos/videogames-api' },
-          { text: 'Videogames Frontend', link: '/proyectos/videogames-frontend' },
-          { text: 'Data Dashboard', link: '/proyectos/data-dashboard' },
-          { text: 'GitHub Analytics', link: '/proyectos/github-analytics' },
-          { text: 'Job Board', link: '/proyectos/job-board' },
+          { text: 'RAG Document Agent', link: '/proyectos/rag-document-agent' },
           { text: 'Claude Chat', link: '/proyectos/claude-chat' }
         ]
       },
       {
-        text: 'Prácticas ANDWEBSOL',
+        text: 'Backend / APIs',
         items: [
-          { text: 'Cloudflare', link: '/practicas/cloudflare' },
-          { text: 'Drupal', link: '/practicas/drupal' },
-          { text: 'Python scripts', link: '/practicas/python' }
+          { text: 'Videogames API', link: '/proyectos/videogames-api' },
+          { text: 'Job Board', link: '/proyectos/job-board' },
+          { text: 'Data Dashboard', link: '/proyectos/data-dashboard' }
+        ]
+      },
+      {
+        text: 'Frontend',
+        items: [
+          { text: 'Portfolio personal', link: '/proyectos/portfolio' },
+          { text: 'Ana Moreno Portfolio', link: '/proyectos/ana-moreno-portfolio' },
+          { text: 'Videogames Frontend', link: '/proyectos/videogames-frontend' }
+        ]
+      },
+      {
+        text: 'Datos / Analytics',
+        items: [
+          { text: 'CF Dashboard', link: '/proyectos/cf-dashboard' },
+          { text: 'GitHub Analytics', link: '/proyectos/github-analytics' }
         ]
       },
       {
