@@ -216,3 +216,5 @@ docker container prune      # Eliminar contenedores parados
 ---
 
 *Docker parece complicado al principio, pero su modelo es simple: imágenes capas, contenedores instancias, compose multi-contenedor. Una vez que lo internalizas, desplegar deja de dar miedo.*
+
+> Más guías y proyectos en [mmoreno.dev](https://mmoreno.dev).

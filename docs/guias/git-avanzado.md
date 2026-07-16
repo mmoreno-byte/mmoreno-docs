@@ -181,3 +181,5 @@ git lg   # Ver historial visual
 ---
 
 *Git avanzado no es sobre memorize más comandos—es sobre entender el modelo de objetos de Git para poder recover cuando algo sale mal.*
+
+> Más guías en [mmoreno.dev](https://mmoreno.dev).

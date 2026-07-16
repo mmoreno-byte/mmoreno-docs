@@ -212,3 +212,5 @@ git stash pop              # Recuperar cambios guardados
 ---
 
 *Aprende Git como si enseñaras a un compañero: cuando puedas explicarlo claramente, es cuando realmente lo entiendes.*
+
+> Más guías en [mmoreno.dev](https://mmoreno.dev).

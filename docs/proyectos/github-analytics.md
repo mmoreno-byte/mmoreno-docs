@@ -149,3 +149,5 @@ X-RateLimit-Reset: 1703123456
 ---
 
 *GitHub Analytics fue mi primer proyecto de "análisis de datos reales" y me enseñó que Pandas no es solo para data science—it también simplifica análisis sencillo.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

@@ -185,3 +185,5 @@ const handleNewChat = () => {
 ---
 
 *Claude Chat me enseñó cómo funcionan los modelos de lenguaje en producción: streaming, contexto limitado, y la importancia de no exponer API keys.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

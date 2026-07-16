@@ -170,3 +170,5 @@ node_modules/
 ---
 
 *Job Board me enseñó el flujo completo de integrar una API externa: desde el registro en Jooble hasta el deployment en Railway.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

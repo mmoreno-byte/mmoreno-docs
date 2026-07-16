@@ -183,6 +183,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
+            "https://mmoreno.dev",
             "https://mmoreno-byte.github.io",
             "http://localhost:5173"
         ));
@@ -233,3 +234,5 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 ---
 
 *Videogames API fue el proyecto donde más aprendí sobre seguridad web, estructura de APIs REST, y el ecosistema Java/Spring.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

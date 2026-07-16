@@ -246,3 +246,5 @@ export default defineConfig({
 ---
 
 *Videogames Frontend me enseñó cómo estructurar una aplicación React con estado global, cómo integrar una API externa, y la importancia de manejar errores de red gracefully.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

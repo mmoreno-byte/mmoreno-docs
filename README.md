@@ -1,8 +1,9 @@
 # mmoreno-dev Docs
 
-Documentación técnica personal con proyectos, lecciones aprendidas y guías. Construida con **VitePress** y desplegada en **Cloudflare Workers**.
+Documentación técnica personal con proyectos, lecciones aprendidas y guías. Construida con **VitePress** y desplegada en **Cloudflare Pages**.
 
-**URL en vivo:** https://mmoreno-docs.mdmorenoinfor.workers.dev/
+**Portfolio:** [https://mmoreno.dev](https://mmoreno.dev)
+**Docs en vivo:** [https://mmoreno-docs.pages.dev](https://mmoreno-docs.pages.dev)
 
 ## 📸 Preview
 
@@ -15,16 +16,18 @@ Documentación técnica personal con proyectos, lecciones aprendidas y guías. C
 
 ## 📚 Contenido
 
-- **9+ Proyectos documentados** - Videogames API, Data Dashboard, Claude Chat, DoFocus y más
-- **Guías técnicas** - Git, Python, Docker, APIs REST, despliegue en Google Cloud
-- **Análisis y tendencias** - GitHub Analytics, Job Board, análisis de mercado tech
-- **Contenido en construcción** - Documentación que crece con cada proyecto
+- **10+ Proyectos documentados** — RAG Document Agent, Videogames API + Frontend, Data Dashboard, Claude Chat, SAP-Turismo, MM Web Studio y más
+- **Frontend** — Portfolio en React 19 + Vite, Ana Moreno Portfolio, Videogames Frontend
+- **Backend / APIs** — Java/Spring Boot con JWT, Python/Flask, FastAPI + Pandas
+- **SAP ABAP Cloud** — RAP con OData V4, Fiori Elements Preview, y SAP CAP como capa de extensión
+- **Ciberseguridad** — Documentación y proyectos del área (portfolio en mmoreno.dev)
+- **Guías técnicas** — Git, Python, Docker, APIs REST, despliegue en Google Cloud, estructura React
 
 ## 🛠️ Stack
 
-- **VitePress** - Generador estático para documentación
-- **Markdown** - Contenido en formato simple y limpio
-- **Cloudflare Workers** - Hosting serverless
+- **VitePress** — Generador estático para documentación
+- **Markdown** — Contenido en formato simple y limpio
+- **Cloudflare Pages** — Hosting serverless con dominio `mmoreno.dev` (zona gestionada aquí)
 
 ## 🚀 Desarrollo local
 
@@ -39,6 +42,17 @@ npm run docs:dev
 npm run docs:build
 ```
 
-## 👤 Autor
+El output queda en `docs/.vitepress/dist/`.
 
-mmorenodev — [GitHub](https://github.com/mmoreno-byte) · [Portfolio](https://mmoreno-byte.github.io/mmorenodev/)
+## 🚢 Despliegue
+
+El sitio se despliega automáticamente en **Cloudflare Pages** al hacer push a `main` (configurado con Wrangler).
+
+```bash
+npm run docs:build
+npx wrangler pages deploy docs/.vitepress/dist
+```
+
+## 👤 Autora
+
+**Loli Moreno (mmorenodev)** — [Portfolio](https://mmoreno.dev) · [GitHub](https://github.com/mmoreno-byte) · [LinkedIn](https://linkedin.com/in/maria-dolores-moreno-cabrera-194983151)

@@ -232,3 +232,5 @@ Accept: application/vnd.api.v2+json
 ---
 
 *Entender REST es entender que cada endpoint es un recurso con operaciones predecibles. Una vez que internalizas esto, diseñar APIs se vuelve natural.*
+
+> Más guías y proyectos en [mmoreno.dev](https://mmoreno.dev).

@@ -236,3 +236,5 @@ import { useAuth, useFetch } from '../hooks';
 ---
 
 *La estructura de React no es dogma—adáptala a tu proyecto. Un proyecto de 3 componentes no necesita 6 carpetas. Pero cuando crece, una buena estructura paga dividends.*
+
+> Más guías y proyectos en [mmoreno.dev](https://mmoreno.dev).

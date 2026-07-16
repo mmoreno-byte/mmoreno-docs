@@ -173,3 +173,5 @@ gcloud run deploy data-dashboard --image gcr.io/$PROJECT_ID/data-dashboard --pla
 ---
 
 *Desplegar en Google Cloud me enseñó que la nube no es magia—son servidores gestionados. Entender qué servicio usar para qué caso es medio trabajo.*
+
+> Más guías y proyectos en [mmoreno.dev](https://mmoreno.dev).

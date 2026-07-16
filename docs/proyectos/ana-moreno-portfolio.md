@@ -152,3 +152,5 @@ jobs:
 ---
 
 *Ana Moreno Portfolio me enseñó que el código es solo una parte del desarrollo—el diseño y la comunicación con el cliente son igual de importantes.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.

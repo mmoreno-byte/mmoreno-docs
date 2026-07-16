@@ -42,6 +42,24 @@ deactivate
 
 Cuando ves `(venv)` al inicio de tu terminal, significa que el entorno está activo. Todas las operaciones de Python y pip afectarán solo a ese entorno.
 
+## uv — la alternativa moderna que uso ahora
+
+[`uv`](https://github.com/astral-sh/uv) es un gestor de paquetes y entornos para Python escrito en Rust. Es **10-100x más rápido** que `pip` y reemplaza tanto a `venv` como a `pip` con una sola herramienta.
+
+```bash
+# Instalar uv
+pip install uv
+
+# Crear entorno + instalar deps + lock, todo en uno
+uv venv
+uv pip install -r requirements.txt
+
+# O directamente desde pyproject.toml
+uv sync
+```
+
+Lo uso en proyectos nuevos. En legacy, sigo con `python -m venv` + `pip`.
+
 ## Gestionar dependencias
 
 ### Instalar una librería
@@ -193,3 +211,5 @@ El frontend y el backend son proyectos separados con sus propios entornos virtua
 ---
 
 *Los entornos virtuales son como el aislamiento de proyectos en un IDE: al principio parecen trabajo extra, pero cuando descubres que no puedes vivir sin ellos, entiendes por qué son el estándar.*
+
+> Más información y guías en [mmoreno.dev](https://mmoreno.dev).

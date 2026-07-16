@@ -2,21 +2,32 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: "mmoreno-dev docs",
-  description: "Proyectos, apuntes y guías técnicas de un desarrollador en construcción",
+  description: "Proyectos, apuntes y guías técnicas de Loli Moreno — Desarrolladora Web, Ciberseguridad y SAP ABAP Cloud",
 
   head: [
-    ['link', { rel: 'icon', href: '/vite.svg' }]
+    ['link', { rel: 'icon', href: '/vite.svg' }],
+    ['meta', { property: 'og:title', content: 'mmoreno-dev · Documentación técnica' }],
+    ['meta', { property: 'og:description', content: 'Proyectos reales, decisiones técnicas y lecciones aprendidas. mmoreno.dev' }],
+    ['meta', { property: 'og:url', content: 'https://mmoreno.dev' }],
+    ['meta', { property: 'og:type', content: 'website' }]
   ],
 
   themeConfig: {
     nav: [
-      { text: 'Inicio', link: '/' },
+      { text: 'Portfolio', link: 'https://mmoreno.dev' },
       { text: 'Proyectos', link: '/proyectos/portfolio' },
       { text: 'Guías', link: '/guias/git-basico' },
       { text: 'SAP', link: '/sap/proyecto1-rap' }
     ],
 
     sidebar: [
+      {
+        text: 'Destacado',
+        items: [
+          { text: 'Portfolio personal', link: '/proyectos/portfolio' },
+          { text: 'MM Web Studio', link: '/proyectos/web-studio' }
+        ]
+      },
       {
         text: 'IA',
         items: [
@@ -35,7 +46,6 @@ export default defineConfig({
       {
         text: 'Frontend',
         items: [
-          { text: 'Portfolio personal', link: '/proyectos/portfolio' },
           { text: 'Ana Moreno Portfolio', link: '/proyectos/ana-moreno-portfolio' },
           { text: 'Videogames Frontend', link: '/proyectos/videogames-frontend' }
         ]
@@ -62,13 +72,15 @@ export default defineConfig({
       {
         text: 'SAP ABAP Cloud',
         items: [
-          { text: 'Proyecto 1: CRUD con RAP', link: '/sap/proyecto1-rap' }
+          { text: 'Proyecto 1: CRUD con RAP', link: '/sap/proyecto1-rap' },
+          { text: 'SAP-Turismo (colaboración)', link: '/sap/sap-turismo' }
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/mmoreno-byte' }
+      { icon: 'github', link: 'https://github.com/mmoreno-byte' },
+      { icon: 'link', link: 'https://mmoreno.dev' }
     ]
   }
 })

@@ -217,3 +217,5 @@ En GitHub Actions, para no hardcodear credenciales:
 ---
 
 *Data Dashboard me enseñó que el backend no es solo "devolver datos"—es entender constraints de producción como memoria, tiempo de respuesta, y escalabilidad.*
+
+> Más documentación en [mmoreno.dev](https://mmoreno.dev) → Proyectos.
