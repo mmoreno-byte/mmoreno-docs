@@ -2,7 +2,7 @@
 
 Estudio dedicado al desarrollo de páginas web. Diseño, optimización y mantenimiento de sitios a medida.
 
-**URL en vivo:** https://mm-web-studio.pages.dev
+**URL en vivo:** https://web-studio-19p.pages.dev
 
 ## Acerca de
 
@@ -30,4 +30,4 @@ En función del proyecto:
 
 La vía principal para nuevos proyectos es el formulario de contacto en `https://mmoreno.dev` o directamente en la web del estudio:
 
-**[https://mm-web-studio.pages.dev](https://mm-web-studio.pages.dev) → Contacto**
+**[https://web-studio-19p.pages.dev](https://web-studio-19p.pages.dev) → Contacto**
