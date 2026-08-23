@@ -2,23 +2,23 @@
 
 API REST para gestionar una colección de videojuegos, construida con Java 21 y Spring Boot. Es mi primer proyecto con tipado fuerte y autenticación JWT real.
 
-**URL en producción:** https://videogames-api-production-16b1.up.railway.app
-**Swagger UI:** https://videogames-api-production-16b1.up.railway.app/swagger-ui.html
+**URL en producción:** https://videogames-api-wjej.onrender.com
+**Swagger UI:** https://videogames-api-wjej.onrender.com/api-docs
 
 ## TL;DR
 
-Backend Java/Spring Boot desplegado en Railway con PostgreSQL, autenticación JWT, y documentación OpenAPI (Swagger). El escollo más grande fue configurar CORS para que el frontend pudiera hacer peticiones.
+Backend Java/Spring Boot desplegado en Render (Docker + PostgreSQL free tier vía `render.yaml`), autenticación JWT, y documentación OpenAPI (Swagger). El escollo más grande fue configurar CORS para que el frontend pudiera hacer peticiones. *(Migrado de Railway a Render en agosto 2026.)*
 
 ## Arquitectura
 
 ```
 ┌─────────────┐     HTTP/JWT      ┌──────────────────────────┐     JDBC     ┌────────────┐
-│  Frontend   │ ────────────────▶ │   Railway (Spring Boot)   │ ──────────▶ │ PostgreSQL │
-│  (React)    │ ◀──────────────── │   Java 21 + Spring Boot   │             │            │
+│  Frontend   │ ────────────────▶ │   Render (Docker)         │ ──────────▶ │ PostgreSQL │
+│  (React)    │ ◀──────────────── │   Java 21 + Spring Boot   │             │  (Render)  │
 └─────────────┘                   └──────────────────────────┘             └────────────┘
                                         │
                                         ▼
-                               Swagger UI (/swagger-ui.html)
+                               Swagger UI (/api-docs)
 ```
 
 ## Decisiones técnicas
@@ -121,7 +121,7 @@ public class User {
 ### Ejemplo: Login
 
 ```bash
-curl -X POST https://videogames-api-production-16b1.up.railway.app/api/auth/login \
+curl -X POST https://videogames-api-wjej.onrender.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "demo", "password": "demo1234"}'
 ```
@@ -137,7 +137,7 @@ Respuesta:
 ### Ejemplo: Listar juegos
 
 ```bash
-curl https://videogames-api-production-16b1.up.railway.app/api/games \
+curl https://videogames-api-wjej.onrender.com/api/games \
   -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9..."
 ```
 
@@ -146,7 +146,7 @@ curl https://videogames-api-production-16b1.up.railway.app/api/games \
 Después de terminar el backend, el frontend no podía hacer peticiones. El navegador bloqueaba todo con un error que al principio no entendía:
 
 ```
-Access to fetch at 'https://videogames-api-production-16b1.up.railway.app' from origin
+Access to fetch at 'https://videogames-api-wjej.onrender.com' from origin
 'https://mmoreno-byte.github.io' has been blocked by CORS policy
 ```
 
@@ -212,7 +212,7 @@ public class SecurityConfig {
 
 3. **Los DTOs son importantes**: no devuelvas entidades JPA directamente. Crea DTOs para controlar qué campos expone tu API.
 
-4. **Railway es fácil para desplegar**: desplegar un JAR de Java en Railway fue más sencillo que hacerlo en Heroku. La variable de entorno `DATABASE_URL` se configura sola.
+4. **Desplegar un JAR de Java en un free tier es más sencillo con Docker que sin él**: empecé en Railway con el JAR directo y luego migré a Render con este mismo `Dockerfile`. Con `render.yaml` la base de datos Postgres se aprovisiona y conecta sola vía `fromDatabase`, sin tocar `DATABASE_URL` a mano.
 
 ## Dockerfile
 
@@ -223,6 +223,38 @@ COPY target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
+
+## Despliegue: Render
+
+```yaml
+# render.yaml
+services:
+  - type: web
+    name: videogames-api
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api-docs
+    envVars:
+      - key: SPRING_DATASOURCE_HOST
+        fromDatabase: { name: videogames-db, property: host }
+      - key: SPRING_DATASOURCE_PORT
+        fromDatabase: { name: videogames-db, property: port }
+      - key: SPRING_DATASOURCE_DB
+        fromDatabase: { name: videogames-db, property: database }
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase: { name: videogames-db, property: user }
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase: { name: videogames-db, property: password }
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  - name: videogames-db
+    plan: free
+```
+
+Un GitHub Action con `cron: "*/12 * * * *"` hace ping a `/api-docs` para que el free tier de Render no se duerma tras 15 min de inactividad.
 
 ## Usuario demo
 

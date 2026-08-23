@@ -30,7 +30,7 @@ Frontend React que se comunica con Videogames API mediante Axios con interceptor
 // services/api.js
 import axios from 'axios';
 
-const API_URL = 'https://videogames-api-production-16b1.up.railway.app';
+const API_URL = 'https://videogames-api-wjej.onrender.com';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -239,7 +239,7 @@ export default defineConfig({
 
 1. **El token va en el header `Authorization`, no en el body**: al principio lo intentaba enviar como JSON normal. Los interceptors facilitan esto.
 
-2. **GitHub Pages + API en Railway = CORS**: frontend y backend en dominios diferentes. Videogames API tiene que permitir explícitamente el origen del frontend.
+2. **GitHub Pages + API en otro dominio = CORS**: frontend y backend en dominios diferentes (ahora Render, antes Railway). Videogames API tiene que permitir explícitamente el origen del frontend.
 
 3. **El logout debe limpiar todo**: localStorage, contexto, y redirigir. Un solo lugar donde hacer logout (el AuthContext) mantiene esto simple.
 

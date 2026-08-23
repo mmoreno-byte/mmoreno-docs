@@ -40,6 +40,7 @@ export default defineConfig({
         items: [
           { text: 'Videogames API', link: '/proyectos/videogames-api' },
           { text: 'Job Board', link: '/proyectos/job-board' },
+          { text: 'Sistema de Reservas', link: '/proyectos/sistema-reservas' },
           { text: 'Data Dashboard', link: '/proyectos/data-dashboard' }
         ]
       },
