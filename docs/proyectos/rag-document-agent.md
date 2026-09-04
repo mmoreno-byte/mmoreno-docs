@@ -1,54 +1,54 @@
 # RAG Document Agent
 
-Agente conversacional que permite subir documentos PDF y hacerles preguntas en lenguaje natural, **en cualquier idioma**, ejecutándose 100% en local sin enviar datos a servicios externos.
+Agente conversacional que permite subir documentos PDF y hacerles preguntas en lenguaje natural, **en cualquier idioma**.
 
 **Repositorio:** https://github.com/mmoreno-byte/ai-portfolio-agent
+**Demo en producción:** https://mmoreno-byte.github.io/ai-portfolio-agent/
 
 ## Stack
 
-- **Frontend:** React 19 + Vite + Axios
-- **Backend:** FastAPI + SQLAlchemy + Uvicorn
+- **Frontend:** React 19 + Vite + Axios — GitHub Pages
+- **Backend:** FastAPI + SQLAlchemy + Uvicorn — Render (Docker)
 - **Vector store:** ChromaDB
-- **Orquestación RAG:** LangChain + `langchain-ollama` + `langchain-community`
-- **Embeddings y LLM:** Ollama (`nomic-embed-text` para embeddings, `llama3.2` para generación)
-- **Persistencia:** PostgreSQL (historial de conversación)
-- **Infraestructura:** Docker Compose (Postgres + backend + frontend)
+- **Orquestación RAG:** LangChain + `langchain-community`
+- **Embeddings:** Cohere (`embed-multilingual-v3.0`)
+- **LLM:** Groq (`openai/gpt-oss-120b`)
+- **Persistencia:** PostgreSQL en Neon (historial de conversación)
 - **PDFs:** `pypdf` para extracción de texto
 - **Detección de idioma:** `langdetect`
+
+*(En local sigue pudiendo levantarse todo con Docker Compose + Ollama, ver más abajo — pero la demo en producción usa Cohere y Groq porque un LLM local no cabe en el free tier de ningún hosting.)*
 
 ## Arquitectura
 
 ```
 ┌──────────────────┐     HTTP/JSON     ┌────────────────────┐
-│   React + Vite   │ ────────────────▶ │  FastAPI backend   │
-│   Frontend       │                   │  LangChain + Chroma│
-│   (Drag & drop)  │ ◀──────────────── │  + Ollama (llocal) │
+│   React + Vite   │ ────────────────▶ │   Render (Docker)  │
+│   GitHub Pages   │                   │  LangChain + Chroma│
+│   (Drag & drop)  │ ◀──────────────── │                    │
 └──────────────────┘                   └────────────────────┘
-        │                                       │
-        │                                       ├──▶ ChromaDB (vectores por documento)
-        │                                       │
-        │                                       ├──▶ PostgreSQL (historial)
-        │                                       │
-        │                                       └──▶ Ollama (LLM + embeddings)
-        │
-        └── Docker Compose
-            ├── postgres:16
-            ├── backend (FastAPI)
-            └── frontend (Vite dev)
+                                               │
+                                               ├──▶ ChromaDB (vectores por documento, en disco)
+                                               │
+                                               ├──▶ PostgreSQL en Neon (historial)
+                                               │
+                                               ├──▶ Cohere (embeddings)
+                                               │
+                                               └──▶ Groq (LLM)
 ```
 
 Flujo:
 
 1. El PDF se sube desde React al backend
 2. FastAPI lo divide en fragmentos con `langchain-text-splitters`
-3. Cada fragmento se vectoriza con `nomic-embed-text` y se guarda en ChromaDB
+3. Cada fragmento se vectoriza con Cohere y se guarda en ChromaDB
 4. Al preguntar, se detecta el idioma de la pregunta con `langdetect`
-5. Se recupera contexto, se construye el prompt con el idioma forzado, y `llama3.2` genera la respuesta en ese idioma
-6. La conversación se guarda en PostgreSQL
+5. Se recupera contexto, se construye el prompt con el idioma forzado, y Groq genera la respuesta en ese idioma
+6. La conversación se guarda en PostgreSQL (Neon)
 
-## docker-compose.yml
+## docker-compose.yml (desarrollo local)
 
-El proyecto se levanta completo con un único comando:
+Para desarrollo local, el proyecto se puede levantar completo con un único comando, usando Ollama en vez de Cohere/Groq:
 
 ```yaml
 services:
@@ -98,14 +98,19 @@ ollama pull nomic-embed-text
 
 ### Modelos separados para embeddings y generación
 
-Intentar usar `llama3.2` para generar embeddings falla: no es un modelo de embeddings. La solución fue usar `nomic-embed-text` específicamente para vectorizar, y `llama3.2` solo para generar respuestas.
+Un modelo de chat no sirve para generar embeddings. La solución es usar un proveedor especializado en embeddings para vectorizar, y uno de chat solo para generar respuestas — en producción, Cohere para lo primero y Groq para lo segundo:
 
 ```python
-from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_cohere import CohereEmbeddings
+from langchain_groq import ChatGroq
 
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
-llm = ChatOllama(model="llama3.2")
+embeddings = CohereEmbeddings(model="embed-multilingual-v3.0")
+llm = ChatGroq(model="openai/gpt-oss-120b")
 ```
+
+### Por qué no Ollama en producción
+
+En local, Ollama (`nomic-embed-text` + `llama3.2`) funciona perfectamente y sin depender de ningún servicio externo. El problema es desplegarlo: un LLM local necesita varios GB de RAM, algo que no cabe en el free tier de ningún hosting (Render free son 512MB compartidos). Para la demo pública hubo que sustituir ambos por APIs gratuitas en la nube (Cohere + Groq), manteniendo exactamente la misma arquitectura RAG.
 
 ### Respuesta en el idioma de la pregunta, no del documento
 
@@ -141,17 +146,16 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 - **Respuesta en el idioma de la pregunta**, no en el idioma del documento
 - Historial de conversación persistente por documento (PostgreSQL)
 - Gestión completa: subir, consultar y eliminar documentos desde la interfaz
-- 100% local — ningún dato sale a servicios externos
 
 ## Endpoints principales del backend
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| POST | `/api/documents` | Subir PDF |
-| GET | `/api/documents` | Listar documentos |
-| DELETE | `/api/documents/{id}` | Eliminar documento |
-| POST | `/api/chat/{doc_id}` | Preguntar al documento (streaming) |
-| GET | `/api/chat/{doc_id}/history` | Historial de la conversación |
+| POST | `/documents/upload` | Subir PDF |
+| GET | `/documents` | Listar documentos |
+| DELETE | `/documents/{id}` | Eliminar documento |
+| POST | `/documents/{id}/ask` | Preguntar al documento |
+| GET | `/documents/{id}/history` | Historial de la conversación |
 
 ## Lecciones aprendidas
 
@@ -159,6 +163,9 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 2. **El idioma del LLM "se pega" al contexto**: si el documento está en inglés y la pregunta en español, el modelo tiende a responder en inglés. Forzar el idioma en el prompt no basta; hay que detectarlo y pasarlo como variable explícita.
 3. **LangChain abstrae, pero no esconde la complejidad**: para debug, sigue siendo útil saber qué se está enviando al LLM y qué se está recuperando del vector store. Imprime los chunks y los prompts siempre.
 4. **Docker Compose para proyectos full-stack de datos**: tres servicios (Postgres + backend + frontend) en un único archivo. Si necesitas reset, `docker compose down -v` y vuelta a empezar.
+5. **Llevar un LLM local a producción gratis no es viable**: Ollama funciona genial en desarrollo, pero ningún free tier tiene la RAM para un modelo de varios GB. La migración pasó por varios intentos — un modelo de embeddings ligero (ONNX) seguía agotando los 512MB del contenedor; la API de Google fallaba por una suspensión de cuenta ajena al código — hasta llegar a Cohere + Groq, ambos con planes gratuitos pensados para esto.
+6. **ChromaDB en disco no sobrevive un redeploy**: en el free tier de Render el disco no es persistente entre despliegues, así que cada documento subido se pierde si el servicio se reinicia o se actualiza el código. Aceptable para una demo (el visitante sube su propio PDF en su sesión), pero es una limitación real a tener en cuenta.
+7. **Los parámetros de URL no siempre son UTF-8 de forma fiable**: enviar la pregunta como query param (`?question=...`) corrompía tildes y eñes al llegar al backend. Pasar la pregunta por el cuerpo de la petición (JSON) en vez de la URL elimina la ambigüedad de codificación por completo.
 
 ---
 
