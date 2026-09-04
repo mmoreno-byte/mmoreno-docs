@@ -8,7 +8,7 @@ API REST para gestionar reservas de espacios de un coworking (puestos, salas de 
 
 ## TL;DR
 
-Backend FastAPI desplegado en Render, con migraciones vía Alembic y tests con pytest (base SQLite en memoria, independiente de la BD real). El primer usuario que se registra se convierte automáticamente en admin. Valida solapes de horario al crear una reserva.
+Backend FastAPI desplegado en Render con base de datos PostgreSQL en Neon, migraciones vía Alembic y tests con pytest (base SQLite en memoria, independiente de la BD real). El primer usuario que se registra se convierte automáticamente en admin. Valida solapes de horario al crear una reserva.
 
 ## Arquitectura
 
@@ -19,9 +19,9 @@ Backend FastAPI desplegado en Render, con migraciones vía Alembic y tests con p
 └─────────────┘                   └──────────────────────────┘
                                         │
                                         ▼
-                          PostgreSQL (instancia compartida
-                          con videogames-db, esquema propio
-                          "sistema_reservas")
+                          PostgreSQL en Neon (instancia
+                          compartida con Videogames API,
+                          esquema propio "sistema_reservas")
 ```
 
 ## Modelo de datos
@@ -94,20 +94,20 @@ overlapping = (
 
 También se rechaza cualquier reserva cuyo `start_time` ya haya pasado.
 
-## Despliegue: Render, compartiendo Postgres con otro proyecto
+## Despliegue: Render + Neon, compartiendo Postgres con otro proyecto
 
-El plan free de Render solo permite **una base de datos Postgres gratuita por cuenta**, y ya estaba en uso por `videogames-db` (ver [Videogames API](/proyectos/videogames-api)). En vez de pagar por una segunda instancia, `sistema-reservas` reutiliza esa misma Postgres pero **aislada en su propio esquema** (`sistema_reservas`), para no chocar con las tablas de `videogames-api`:
+El backend corre en Render (Python), pero la base de datos vive en Neon — el mismo proyecto Neon que usa [Videogames API](/proyectos/videogames-api). En vez de pagar por una segunda base, `sistema-reservas` reutiliza esa misma Postgres pero **aislada en su propio esquema** (`sistema_reservas`), para no chocar con las tablas de `videogames-api`:
 
 ```yaml
 # render.yaml
 envVars:
   - key: DATABASE_URL
-    fromDatabase:
-      name: videogames-db
-      property: connectionString
+    sync: false
   - key: PYTHON_VERSION
     value: "3.11.9"
 ```
+
+`DATABASE_URL` no se guarda en el repo (`sync: false`): se pega a mano en el dashboard de Render con la cadena de conexión de Neon. *(Al principio esta base vivía en el Postgres gratuito de Render, compartido con `videogames-db` vía `fromDatabase`; se migró a Neon en septiembre 2026 junto con Videogames API, por la misma razón: el Postgres free de Render caduca a los 30 días.)*
 
 ```python
 # app/database.py
