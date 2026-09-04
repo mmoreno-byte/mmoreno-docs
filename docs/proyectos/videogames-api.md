@@ -7,14 +7,14 @@ API REST para gestionar una colección de videojuegos, construida con Java 21 y 
 
 ## TL;DR
 
-Backend Java/Spring Boot desplegado en Render (Docker + PostgreSQL free tier vía `render.yaml`), autenticación JWT, y documentación OpenAPI (Swagger). El escollo más grande fue configurar CORS para que el frontend pudiera hacer peticiones. *(Migrado de Railway a Render en agosto 2026.)*
+Backend Java/Spring Boot desplegado en Render (Docker vía `render.yaml`) con base de datos PostgreSQL en Neon, autenticación JWT, y documentación OpenAPI (Swagger). El escollo más grande fue configurar CORS para que el frontend pudiera hacer peticiones. *(Migrado de Railway a Render en agosto 2026; base de datos migrada de Render a Neon en septiembre 2026 porque el Postgres free de Render caduca a los 30 días.)*
 
 ## Arquitectura
 
 ```
 ┌─────────────┐     HTTP/JWT      ┌──────────────────────────┐     JDBC     ┌────────────┐
 │  Frontend   │ ────────────────▶ │   Render (Docker)         │ ──────────▶ │ PostgreSQL │
-│  (React)    │ ◀──────────────── │   Java 21 + Spring Boot   │             │  (Render)  │
+│  (React)    │ ◀──────────────── │   Java 21 + Spring Boot   │             │   (Neon)   │
 └─────────────┘                   └──────────────────────────┘             └────────────┘
                                         │
                                         ▼
@@ -57,14 +57,14 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}  # Producción
+    url: ${SPRING_DATASOURCE_URL}  # Producción: cadena JDBC completa (Neon)
   jpa:
     hibernate:
       ddl-auto: validate      # Producción: no tocar el esquema
 ```
 
 **H2 en desarrollo**: rápido, no necesita instalación, se crea automáticamente.
-**PostgreSQL en producción**: más robusto, persiste los datos.
+**PostgreSQL en producción**: más robusto, persiste los datos. Antes se montaba a partir de host/puerto/db sueltos que daba Render; ahora es una única URL JDBC completa, porque la base ya no la gestiona Render sino Neon.
 
 El mismo código, perfiles diferentes.
 
@@ -212,7 +212,9 @@ public class SecurityConfig {
 
 3. **Los DTOs son importantes**: no devuelvas entidades JPA directamente. Crea DTOs para controlar qué campos expone tu API.
 
-4. **Desplegar un JAR de Java en un free tier es más sencillo con Docker que sin él**: empecé en Railway con el JAR directo y luego migré a Render con este mismo `Dockerfile`. Con `render.yaml` la base de datos Postgres se aprovisiona y conecta sola vía `fromDatabase`, sin tocar `DATABASE_URL` a mano.
+4. **Desplegar un JAR de Java en un free tier es más sencillo con Docker que sin él**: empecé en Railway con el JAR directo y luego migré a Render con este mismo `Dockerfile`.
+
+5. **Cuidado con las bases de datos "free" en un PaaS**: el Postgres gratuito de Render no solo se duerme por inactividad como el web service — caduca a los 30 días y se borra si no subes de plan. Al principio usaba `fromDatabase` en `render.yaml` para que Render aprovisionara y conectara la base sola, pero eso ata la base al ciclo de vida (y a la caducidad) del proveedor del web service. Migré a Neon (Postgres serverless con plan free que solo suspende el cómputo por inactividad, sin borrar los datos) con una única variable `SPRING_DATASOURCE_URL` en vez de depender de esa integración automática.
 
 ## Dockerfile
 
@@ -224,7 +226,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-## Despliegue: Render
+## Despliegue: Render + Neon
 
 ```yaml
 # render.yaml
@@ -236,25 +238,23 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api-docs
     envVars:
-      - key: SPRING_DATASOURCE_HOST
-        fromDatabase: { name: videogames-db, property: host }
-      - key: SPRING_DATASOURCE_PORT
-        fromDatabase: { name: videogames-db, property: port }
-      - key: SPRING_DATASOURCE_DB
-        fromDatabase: { name: videogames-db, property: database }
+      - key: SPRING_DATASOURCE_URL
+        sync: false
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase: { name: videogames-db, property: user }
+        sync: false
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase: { name: videogames-db, property: password }
+        sync: false
       - key: JWT_SECRET
         generateValue: true
-
-databases:
-  - name: videogames-db
-    plan: free
 ```
 
-Un GitHub Action con `cron: "*/12 * * * *"` hace ping a `/api-docs` para que el free tier de Render no se duerma tras 15 min de inactividad.
+Ya no hay bloque `databases:` — la base de datos no vive en Render, vive en un proyecto de Neon aparte. Las tres variables con `sync: false` no se guardan en el repo: se rellenan a mano en el dashboard de Render con los datos de conexión que da Neon (host del pooler, usuario y contraseña), con esta forma para `SPRING_DATASOURCE_URL`:
+
+```
+jdbc:postgresql://<host-pooler>.neon.tech/<database>?sslmode=require&channel_binding=require
+```
+
+Un GitHub Action con `cron: "*/12 * * * *"` hace ping a `/api-docs` (con reintentos, para no fallar por un arranque en frío puntual) para que el free tier de Render no se duerma tras 15 min de inactividad.
 
 ## Usuario demo
 
