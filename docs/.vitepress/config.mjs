@@ -54,6 +54,7 @@ export default defineConfig({
       {
         text: 'Datos / Analytics',
         items: [
+          { text: 'INE Padrón Pipeline', link: '/proyectos/pipeline' },
           { text: 'CF Dashboard', link: '/proyectos/cf-dashboard' },
           { text: 'GitHub Analytics', link: '/proyectos/github-analytics' }
         ]
